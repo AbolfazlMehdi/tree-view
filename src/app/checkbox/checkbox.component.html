@@ -1,0 +1,17 @@
+
+  <label class="container-check  {{customClass}}">
+    <input (change)="onChangeChecked($event)"
+           [(ngModel)]="value"
+           [disabled]="disabled"
+           [tabIndex]="tabIndex"
+           type="checkbox">
+    <span
+      class="checkmark-check " [ngClass]="{'alignCheckbox':changeContentCheckbox}"></span>
+  </label>
+  <span class="label-check">{{label}}</span>
+
+
+
+
+
+

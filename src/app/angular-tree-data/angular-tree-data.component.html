@@ -1,36 +1,12 @@
 <div class="page_style_content" [ngClass]="{'rtl': rtl}">
-  <ul class="tree">
-    <li *ngFor="let item of treeData; let i = index"
-        [ngClass]="{'single-root': (!item[bindChild] || item[bindChild].length  === 0)}">
-      <div class="root-item" (click)="onToggle(i , null)">
-        <ng-container
-          *ngIf="item[bindChild] && item[bindChild].length !==0">
-          <svg width="14" height="14" viewBox="0 0 16 16" class="icon-node" [ngClass]="{'open-node': toggle[i]}">
-            <use [attr.xlink:href]="'assets/icons/icons.svg#bi-chevron-right'" *ngIf="!rtl">
-            </use>
-            <use [attr.xlink:href]="'assets/icons/icons.svg#bi-chevron-left'" *ngIf="rtl">
-            </use>
-          </svg>
-        </ng-container>
-        <span class="checkbox-span" app-checkbox [(ngModel)]="item.selected"
-              (changeChecked)="selectNode(item,$event.target.checked)"
-              [initValue]="item.selected"
-              [changeContentCheckbox]="item.childHasSelected"  ></span>
-        <span class="title-tree">{{item[bindTitle] }}</span>
-      </div>
-      <ng-container *ngIf="item[bindChild] && item[bindChild].length !==0 && toggle[i]">
-        <ng-container *ngTemplateOutlet="tree; context: { $implicit: item[bindChild], indexParent: i }"></ng-container>
-      </ng-container>
-    </li>
-  </ul>
-
-  <ng-template #tree let-allItems let-indexParent="indexParent">
-    <ul class="parent-node" style="width: 100%; padding: 0">
-      <ng-container *ngFor="let child of allItems; let i = index">
+  <ng-container *ngTemplateOutlet="tree; context: { $implicit: treeData, indexParent: 0 , isParent: true }"></ng-container>
+  <ng-template #tree let-allItems let-isParent="isParent" let-indexParent="indexParent">
+    <ul [ngClass]="{'tree' : isParent , 'parent-node' : !isParent}" style="width: 100%; padding: 0">
+      <ng-container *ngFor="let item of allItems; let i = index">
         <li
-          [ngClass]="{'single-root': (!child[bindChild] || child[bindChild].length  === 0)}">
+          [ngClass]="{'single-root': (!item[bindChild] || item[bindChild].length  === 0)}">
           <div class="root-item" (click)="onToggle(indexParent , i)">
-            <ng-container *ngIf="child[bindChild]  && child[bindChild].length !==0">
+            <ng-container *ngIf="item[bindChild]  && item[bindChild].length !==0">
               <svg width="14" height="14" viewBox="0 0 16 16" class="icon-node"
                    [ngClass]="{'open-node': toggle[indexParent + '.' + i]}">
                 <use [attr.xlink:href]="'assets/icons/icons.svg#bi-chevron-right'" *ngIf="!rtl">
@@ -39,22 +15,20 @@
                 </use>
               </svg>
             </ng-container>
-            <span app-checkbox [(ngModel)]="child.selected" (changeChecked)="selectNode(child,$event.target.checked)"
-                  [initValue]="child.selected"
-                  [changeContentCheckbox]="child.childHasSelected"
+            <span app-checkbox [(ngModel)]="item.selected" (changeChecked)="selectNode(item,$event.target.checked)"
+                  [initValue]="item.selected"
+                  [changeContentCheckbox]="item.childHasSelected"
                   class="checkbox-tree checkbox-span" ></span>
             <span
-              class="title-tree child-node">{{child[bindTitle]}}</span>
+              class="title-tree" [ngClass]="{'child-node': !isParent}">{{item[bindTitle]}}</span>
           </div>
-
           <ng-container
-            *ngIf="child[bindChild] && child[bindChild].length !==0 && toggle[indexParent + '.' + i]">
+            *ngIf="item[bindChild] && item[bindChild].length !==0 && toggle[indexParent + '.' + i]">
             <ng-container
-              *ngTemplateOutlet="tree;context:{ $implicit: child[bindChild], indexParent: indexParent + '.' + i}"></ng-container>
+              *ngTemplateOutlet="tree;context:{ $implicit: item[bindChild], indexParent: indexParent + '.' + i , isParent: false}"></ng-container>
           </ng-container>
         </li>
       </ng-container>
-
     </ul>
   </ng-template>
 </div>

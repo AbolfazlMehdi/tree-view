@@ -1,0 +1,67 @@
+<div class="page_style_content" [ngClass]="{'rtl': rtl}">
+  <ul class="tree">
+    <li *ngFor="let item of treeData; let i = index"
+        [ngClass]="{'single-root': (!item[bindChild] || item[bindChild].length  === 0)}">
+      <div class="root-item" (click)="onToggle(i , null)">
+        <ng-container
+          *ngIf="item[bindChild] && item[bindChild].length !==0">
+          <svg width="14" height="14" fill="currentColor"
+               viewBox="0 0 16 16" class="icon-node" [ngClass]="{'open-node': toggle[i]}">
+            <path *ngIf="!rtl" fill-rule="evenodd"
+                  d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+
+            <path *ngIf="rtl" fill-rule="evenodd"
+                  d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+          </svg>
+        </ng-container>
+        <span app-checkbox [(ngModel)]="item.selected"
+              (changeChecked)="selectNode(item,$event.target.checked)"
+              [initValue]="item.selected"
+              [changeContentCheckbox]="item.childHasSelected" style="width: 25px"></span>
+
+        <span class="title-tree">{{item[bindTitle] }}</span>
+
+      </div>
+
+      <ng-container *ngIf="item[bindChild] && item[bindChild].length !==0 && toggle[i]">
+        <ng-container *ngTemplateOutlet="tree; context: { $implicit: item[bindChild], indexParent: i }"></ng-container>
+      </ng-container>
+    </li>
+  </ul>
+
+  <ng-template #tree let-allItems let-indexParent="indexParent">
+    <ul class="parent-node" style="width: 100%; padding: 0">
+      <ng-container *ngFor="let child of allItems; let i = index">
+        <li
+          [ngClass]="{'single-root': (!child[bindChild] || child[bindChild].length  === 0)}">
+          <div class="root-item" (click)="onToggle(indexParent , i)">
+            <ng-container *ngIf="child[bindChild]  && child[bindChild].length !==0">
+              <svg width="14" height="14" fill="currentColor"
+                   viewBox="0 0 16 16"
+                   class="icon-node" [ngClass]="{'open-node': toggle[indexParent + '.' + i]}">
+                <path *ngIf="!rtl" fill-rule="evenodd"
+                      d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+
+                <path *ngIf="rtl" fill-rule="evenodd"
+                      d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+              </svg>
+            </ng-container>
+            <span app-checkbox [(ngModel)]="child.selected" (changeChecked)="selectNode(child,$event.target.checked)"
+                  [initValue]="child.selected"
+                  [changeContentCheckbox]="child.childHasSelected"
+                  class="checkbox-tree" style="width: 25px;"></span>
+            <span
+              class="title-tree child-node">{{child[bindTitle]}}</span>
+          </div>
+
+          <ng-container
+            *ngIf="child[bindChild] && child[bindChild].length !==0 && toggle[indexParent + '.' + i]">
+            <ng-container
+              *ngTemplateOutlet="tree;context:{ $implicit: child[bindChild], indexParent: indexParent + '.' + i}"></ng-container>
+          </ng-container>
+        </li>
+      </ng-container>
+
+    </ul>
+  </ng-template>
+</div>

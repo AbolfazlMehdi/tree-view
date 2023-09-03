@@ -17,7 +17,7 @@
             </ng-container>
             <span app-checkbox [(ngModel)]="item.selected" (changeChecked)="selectNode(item,$event.target.checked)"
                   [initValue]="item.selected"
-                  [changeContentCheckbox]="item.childHasSelected"
+                  [changeContentCheckbox]="item.childIsSelected"
                   class="checkbox-tree checkbox-span" ></span>
             <span
               class="title-tree" [ngClass]="{'child-node': !isParent}">{{item[bindTitle]}}</span>

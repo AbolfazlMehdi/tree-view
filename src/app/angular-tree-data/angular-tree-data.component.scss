@@ -2,9 +2,7 @@
   padding: 0;
 }
 
-app-arman-tree-view .c_checkbox_content {
-  height: 40px !important;
-}
+
 
 .icon-node {
   transform: rotate(0deg);
@@ -90,16 +88,6 @@ app-arman-tree-view .c_checkbox_content {
   float: left;
   line-height: 24px;
   color: #777777;
-}
-
-.checkbox-tree {
-  display: inline-block;
-  position: relative;
-}
-
-.checkbox-tree-child {
-  display: inline-block;
-  position: relative;
 }
 
 .parent-node {

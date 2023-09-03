@@ -5,33 +5,6 @@
 }
 
 
-.title-tree {
-  padding: 0 5px;
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 600;
-  width: calc(100% - 30px);
-  cursor: pointer;
-  font-family: sans-serif;
-  margin-left: 25px;
-}
-
-.child-node {
-  display: inline-block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  font-weight: normal;
-}
-
-
-.rtl {
-  .title-tree {
-    margin-left: 0;
-    margin-right: 25px;
-  }
-}
-
 .container-check .checkmark-check.alignCheckbox:after {
   left: 3px;
   top: 6px;

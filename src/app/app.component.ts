@@ -15,9 +15,9 @@ export class AppComponent {
     },
     {
       title: 'test22', id: '2', children: [
-        {title: 'test2.1', id: '2.1'},
+        {title: 'علی', id: '2.1'},
         {
-          title: 'test2.2', id: '2.2', children: [
+          title: 'ممد', id: '2.2', children: [
             {
               title: 'test2.2.2', id: '2.2.2',
               children: [

@@ -10,7 +10,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {debounceTime, distinctUntilChanged, Subject} from "rxjs";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'angular-tree-data',
@@ -32,7 +32,6 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
   @Input() treeData: any[] = [];
   value = '';
   oldArray: any = [];
-  @Input() searchPlaceholder: string = 'جستجو';
   @Output() selectItem = new EventEmitter<any[]>();
   @Input() bindChild = 'children';
   @Input() bindTitle = 'title';
@@ -70,83 +69,59 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
 
 
   onToggle(index: any, indexChild: any) {
-    if (indexChild !== null) {
-      this.toggle[index + '.' + indexChild] = !this.toggle[index + '.' + indexChild];
-    } else {
-      this.toggle[index] = !this.toggle[index];
-    }
+    this.toggle[index + '.' + indexChild] = !this.toggle[index + '.' + indexChild];
   }
 
-  selectNode(node: any, checked: boolean): void {
+  selectNode(node: Node, checked: boolean): void {
     this.check(node, checked);
     this.findParent(this.treeData);
   }
 
 
-  check(node: any, checked: boolean, childSelected?: any) {
-    if (childSelected) {
-      node.childHasSelected = checked;
-    }
+  check(node: Node, checked: boolean): void {
     node.selected = checked;
-    if (node[this.bindChild] && node[this.bindChild].length !== 0) {
-      node[this.bindChild].forEach((x: any) => {
-        const m = !!childSelected;
-        this.check(x, checked, m);
-      });
-    }
-
+    node.children?.forEach(child => this.check(child, checked));
   }
 
-  findParent(data: any) {
-    for (const i in data) {
-      const itemsSelection: any = [];
-      const itemsChildSelection: any = [];
-      const item = data[i];
-      if (item[this.bindChild] && item[this.bindChild].length !== 0) {
-        this.findParent(item[this.bindChild]);
-        item.selected = item[this.bindChild].every((itemChild: any) => {
-          return itemChild.selected === true;
-        });
-        item[this.bindChild].forEach((itemChild: any) => {
-          itemsSelection.push(itemChild.selected);
-          itemsChildSelection.push(itemChild.childHasSelected);
-        });
+  findParent(nodes: Node[]): void {
+    this.searchForParent(nodes)
+    this.onChange(this.setSelectData);
+    this.selectItem.emit(this.setSelectData);
+  }
 
-        this.hasChildSelected(item, itemsSelection, itemsChildSelection);
-
+  searchForParent(nodes: Node[]) {
+    nodes.forEach(node => {
+      if (node.children) {
+        this.searchForParent(node.children);
+        node.selected = node.children.every(child => child.selected);
+        node.childIsSelected = node.children.some(child => child.selected);
+        this.hasChildSelected(node)
       }
-      this.setArray(item);
-    }
-    setTimeout(() => {
-      this.onChange(this.setSelectData);
-      this.selectItem.emit(this.setSelectData);
+      this.setArray(node);
     });
   }
 
-  hasChildSelected(data: any, itemsSelection: any, itemsChildSelection: any) {
-    const hasSelection = itemsSelection.indexOf(true);
-    const hasChildSelection = itemsChildSelection.indexOf(true);
-    data.childHasSelected = hasSelection !== -1;
-    if (hasChildSelection !== -1) {
-      data.childHasSelected = true;
-    }
-    if (data.selected) {
-      data.childHasSelected = false;
+  hasChildSelected(node: Node): void {
+    node.childIsSelected = node.children?.some(child => child.selected) || false;
+    if (node.selected) {
+      node.childIsSelected = false;
     }
   }
 
 
-  setArray(data: any) {
-    const index = this.setSelectData.indexOf(data);
-    if (index === -1) {
-      if (data.selected) {
-        this.setSelectData.push(data);
-      }
-    } else {
-      if (!data.selected) {
-        this.setSelectData.splice(index, 1);
-      }
+  setArray(node: Node): void {
+    const index = this.setSelectData.indexOf(node);
+    if (node.selected && index === -1) {
+      this.setSelectData.push(node);
+    } else if (!node.selected && index !== -1) {
+      this.setSelectData.splice(index, 1);
     }
   }
+
 }
 
+interface Node {
+  selected: boolean;
+  childIsSelected?: boolean;
+  children?: Node[];
+}

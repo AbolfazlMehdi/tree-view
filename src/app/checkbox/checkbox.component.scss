@@ -1,14 +1,15 @@
+
 .checkmark-check.alignCheckbox {
-  background-color: rgb(33, 150, 243) !important ;
-  border-color:   rgb(33, 150, 243);
+  background-color: rgb(33, 150, 243) !important;
+  border-color: rgb(33, 150, 243);
 }
+
 
 .container-check .checkmark-check.alignCheckbox:after {
   left: 3px;
   top: 6px;
   width: 7px;
   height: 0;
-
   border: solid #efefef;
   border-width: 0 1.2px 1.2px 0;
   -webkit-transform: rotate(0deg);
@@ -26,11 +27,7 @@
   width: 0;
 
 }
-.label-check{
-  position: relative;
-  right: 29px;
-  bottom: 10px;
-}
+
 /* Hide the browser's default checkbox */
 .container-check input {
   opacity: 0;
@@ -42,7 +39,7 @@
   position: absolute;
   right: 0;
   left: 0;
-  top: 0;
+  top: 1px;
   width: 15px;
   height: 15px;
   transition: transform 0.28s ease;
@@ -54,7 +51,7 @@
 
 .container-check input:disabled ~ .checkmark-check {
   background-color: #e2e2e2 !important;
-  border: 1px solid  rgb(33, 150, 243);
+  border: 1px solid rgb(33, 150, 243);
 }
 
 /* On mouse-over, add a grey background color */
@@ -65,8 +62,8 @@
 /* When the checkbox is checked, add a blue background */
 .container-check input:checked ~ .checkmark-check {
   // background-color: #f9f9f9;
-  background-color:  rgb(33, 150, 243)  !important;
-  border-color:  rgb(33, 150, 243);
+  background-color: rgb(33, 150, 243) !important;
+  border-color: rgb(33, 150, 243);
 }
 
 /* Create the checkmark-check/indicator (hidden when not checked) */

@@ -10,7 +10,7 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {Subject} from "rxjs";
+import {TreeNode} from "../model/tree-node.model";
 
 @Component({
   selector: 'angular-tree-data',
@@ -25,17 +25,9 @@ import {Subject} from "rxjs";
 })
 export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, OnDestroy, OnChanges {
 
-  public setSelectData: any = [];
-  txtQueryChanged: any = new Subject<string>();
-  toggle: any = {};
+  @Output() selectionChange = new EventEmitter<TreeNode[]>();
 
-  @Input() treeData: any[] = [];
-  value = '';
-  oldArray: any = [];
-  @Output() selectItem = new EventEmitter<any[]>();
-  @Input() bindChild = 'children';
-  @Input() bindTitle = 'title';
-  @Input() rtl: boolean = false;
+  @Input() nodes: any[] = []
 
   constructor() {
   }
@@ -61,67 +53,70 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.findParent(this.treeData);
   }
 
   ngOnDestroy(): void {
   }
 
-
-  onToggle(index: any, indexChild: any) {
-    this.toggle[index + '.' + indexChild] = !this.toggle[index + '.' + indexChild];
+  toggleSelection(node: TreeNode) {
+    node.selected = !node.selected;
+    this.updateChildren(node, node.selected);
+    this.updateParentsBaseOnFullChildrenSelected(node);
+    this.updateParentsBaseOnSomeChildrenSelected(node);
+    // this.emitSelection();
   }
 
-  selectNode(node: Node, checked: boolean): void {
-    this.check(node, checked);
-    this.findParent(this.treeData);
-  }
-
-
-  check(node: Node, checked: boolean): void {
-    node.selected = checked;
-    node.children?.forEach(child => this.check(child, checked));
-  }
-
-  findParent(nodes: Node[]): void {
-    this.searchForParent(nodes)
-    this.onChange(this.setSelectData);
-    this.selectItem.emit(this.setSelectData);
-  }
-
-  searchForParent(nodes: Node[]) {
-    nodes.forEach(node => {
-      if (node.children) {
-        this.searchForParent(node.children);
-        node.selected = node.children.every(child => child.selected);
-        node.childIsSelected = node.children.some(child => child.selected);
-        this.hasChildSelected(node)
-      }
-      this.setArray(node);
-    });
-  }
-
-  hasChildSelected(node: Node): void {
-    node.childIsSelected = node.children?.some(child => child.selected) || false;
+  updateChildren(node: TreeNode, selected: boolean) {
     if (node.selected) {
-      node.childIsSelected = false;
+      node['childIsSelected'] = false;
+    }
+    if (node.children) {
+      node.children.forEach(child => {
+        child.selected = selected;
+        this.updateChildren(child, selected);
+      });
     }
   }
 
-
-  setArray(node: Node): void {
-    const index = this.setSelectData.indexOf(node);
-    if (node.selected && index === -1) {
-      this.setSelectData.push(node);
-    } else if (!node.selected && index !== -1) {
-      this.setSelectData.splice(index, 1);
+  updateParentsBaseOnFullChildrenSelected(node: TreeNode) {
+    if (node.parent) {
+      const allSiblingsSelected: boolean | undefined = node.parent.children?.every(child => child.selected);
+      node.parent.selected = allSiblingsSelected;
+      if (allSiblingsSelected) {
+        node.parent['childIsSelected'] = false;
+      }
+      this.updateParentsBaseOnFullChildrenSelected(node.parent);
     }
+  }
+
+  updateParentsBaseOnSomeChildrenSelected(node: TreeNode) {
+    if (node.parent && !node.parent.selected ) {
+      node.parent['childIsSelected'] = node.parent.children?.some(child => child.selected || child['childIsSelected']);
+      this.updateParentsBaseOnSomeChildrenSelected(node.parent);
+    }
+  }
+
+  toggleExpand(node: TreeNode) {
+    node.expanded = !node.expanded;
+  }
+
+  emitSelection() {
+    const selectedNodes = this.getSelectedNodes(this.nodes);
+    this.selectionChange.emit(selectedNodes);
+  }
+
+  getSelectedNodes(nodes: TreeNode[]): TreeNode[] {
+    let selected: TreeNode[] = [];
+    nodes.forEach(node => {
+      if (node.selected) {
+        selected.push(node);
+      }
+      if (node.children) {
+        selected = selected.concat(this.getSelectedNodes(node.children));
+      }
+    });
+    return selected;
   }
 
 }
 
-interface Node {
-  selected: boolean;
-  childIsSelected?: boolean;
-  children?: Node[];
-}

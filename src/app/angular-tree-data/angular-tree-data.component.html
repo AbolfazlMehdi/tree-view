@@ -1,34 +1,54 @@
-<div class="page_style_content" [ngClass]="{'rtl': rtl}">
-  <ng-container *ngTemplateOutlet="tree; context: { $implicit: treeData, indexParent: 0 , isParent: true }"></ng-container>
-  <ng-template #tree let-allItems let-isParent="isParent" let-indexParent="indexParent">
-    <ul [ngClass]="{'tree' : isParent , 'parent-node' : !isParent}" style="width: 100%; padding: 0">
-      <ng-container *ngFor="let item of allItems; let i = index">
-        <li
-          [ngClass]="{'single-root': (!item[bindChild] || item[bindChild].length  === 0)}">
-          <div class="root-item" (click)="onToggle(indexParent , i)">
-            <ng-container *ngIf="item[bindChild]  && item[bindChild].length !==0">
-              <svg width="14" height="14" viewBox="0 0 16 16" class="icon-node"
-                   [ngClass]="{'open-node': toggle[indexParent + '.' + i]}">
-                <use [attr.xlink:href]="'assets/icons/icons.svg#bi-chevron-right'" *ngIf="!rtl">
-                </use>
-                <use [attr.xlink:href]="'assets/icons/icons.svg#bi-chevron-left'" *ngIf="rtl">
-                </use>
+<div class="form-floating tree-select-content position-relative w-100 border bg-white rounded border-custom-tree">
+  <div class="tree-select-menu position-absolute w-100 border border-custom-tree bg-white px-2 overflow-auto d-block">
+    <ng-container
+      *ngTemplateOutlet="  tree;   context: {  $implicit: nodes  }
+      "
+    ></ng-container>
+    <ng-template #tree let-allItems>
+      <ul>
+        <ng-container *ngFor="let item of allItems; let i = index">
+          <li class="node-item">
+            <div class="node-item-label">
+              <svg
+                *ngIf="item.children" (click)="toggleExpand(item)"
+                xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                fill="currentColor" class="bi bi-chevron-down icon-node" viewBox="0 0 16 16"
+                [ngClass]="{'open-node': item.expanded }"
+              >
+                <path fill-rule="evenodd"
+                      d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
               </svg>
+              <div class="node-item-label" [ngClass]="{'single-node' : !item.children}">
+
+                <label class="container-check me-2"  >
+                  <input
+                    (change)="toggleSelection(item)"
+                    [checked]="item.selected"
+                    type="checkbox"
+                  />
+                  <span
+                    class="checkmark-check lh-1"
+                    [ngClass]="{ alignCheckbox: item.childIsSelected }"
+                  ></span>
+                </label>
+<!--                <input type="checkbox" [checked]="item.selected" (change)="toggleSelection(item)">-->
+               <span> {{ item.name }}</span>
+              </div>
+            </div>
+
+
+            <ng-container *ngIf="item.children && item.expanded"
+            >
+              <ng-container
+                *ngTemplateOutlet="tree;context:{ $implicit: item.children }"
+              ></ng-container>
             </ng-container>
-            <span app-checkbox [(ngModel)]="item.selected" (changeChecked)="selectNode(item,$event.target.checked)"
-                  [initValue]="item.selected"
-                  [changeContentCheckbox]="item.childIsSelected"
-                  class="checkbox-tree checkbox-span" ></span>
-            <span
-              class="title-tree" [ngClass]="{'child-node': !isParent}">{{item[bindTitle]}}</span>
-          </div>
-          <ng-container
-            *ngIf="item[bindChild] && item[bindChild].length !==0 && toggle[indexParent + '.' + i]">
-            <ng-container
-              *ngTemplateOutlet="tree;context:{ $implicit: item[bindChild], indexParent: indexParent + '.' + i , isParent: false}"></ng-container>
-          </ng-container>
-        </li>
-      </ng-container>
-    </ul>
-  </ng-template>
+          </li>
+
+        </ng-container>
+      </ul>
+    </ng-template>
+  </div>
+
 </div>
+

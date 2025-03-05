@@ -9,7 +9,7 @@ import {FormsModule} from "@angular/forms";
 @NgModule({
   declarations: [
     AngularTreeDataComponent,
-    CheckboxComponent
+    CheckboxComponent,
   ],
   imports: [
     CommonModule,

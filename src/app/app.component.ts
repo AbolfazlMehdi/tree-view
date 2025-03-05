@@ -1,4 +1,5 @@
 import {Component} from '@angular/core';
+import {TreeNode} from "./model/tree-node.model";
 
 @Component({
   selector: 'app-root',
@@ -7,38 +8,37 @@ import {Component} from '@angular/core';
 })
 export class AppComponent {
   title = 'angular-tree-view';
-  items = [
-    {
-      title: 'test', id: '1', children: [
-        {title: 'test1', id: '1.1'}
-      ]
-    },
-    {
-      title: 'test22', id: '2', children: [
-        {title: 'علی', id: '2.1'},
-        {
-          title: 'ممد', id: '2.2', children: [
-            {
-              title: 'test2.2.2', id: '2.2.2',
-              children: [
-                {title: 'test2.1', id: '2.1'},
-                {
-                  title: 'test2.2', id: '2.2', children: [
-                    {title: 'test2.2', id: '2.2.2'}
-                  ]
-                }
-              ]
-            },
-            {
-              title: 'test2.2.3', id: '2'
-            }
-          ]
-        },
+  items: TreeNode[] = [];
 
+constructor() {
+  this.items = [
+    {
+      id: '1', name: 'Fruits', selected: false, expanded: false, children: [
+        { id: '1.1', name: 'Apple', selected: false , expanded: false, children: [
+            { id: '1.1-1', name: 'Carrot', selected: false },
+            { id: '1.1-2', name: 'Broccoli', selected: false ,  children: [
+                { id: '1.1-1-1', name: 'Carrot', selected: false },
+                { id: '1.1-2-2', name: 'Broccoli', selected: false },
+              ]},
+          ] },
+        { id: '1.2', name: 'Orange', selected: false },
       ]
     },
     {
-      title: 'test23', id: '2'
+      id: '2', name: 'Vegetables', selected: false,  expanded: false,children: [
+        { id: '2.1', name: 'Carrot', selected: false },
+        { id: '2.2', name: 'Broccoli', selected: false },
+      ]
     }
-  ]
+  ];
+  this.assignParents(this.items, null);
+}
+  assignParents(nodes: TreeNode[], parent: TreeNode | null) {
+    nodes.forEach((node: any) => {
+      node.parent = parent;
+      if (node.children) {
+        this.assignParents(node.children, node);
+      }
+    });
+  }
 }

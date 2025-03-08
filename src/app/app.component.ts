@@ -31,14 +31,6 @@ constructor() {
       ]
     }
   ];
-  this.assignParents(this.items, null);
 }
-  assignParents(nodes: TreeNode[], parent: TreeNode | null) {
-    nodes.forEach((node: any) => {
-      node.parent = parent;
-      if (node.children) {
-        this.assignParents(node.children, node);
-      }
-    });
-  }
+
 }

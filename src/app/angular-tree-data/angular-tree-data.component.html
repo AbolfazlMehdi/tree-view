@@ -1,7 +1,7 @@
 <div class="form-floating tree-select-content position-relative w-100 border bg-white rounded border-custom-tree">
   <div class="tree-select-menu position-absolute w-100 border border-custom-tree bg-white px-2 overflow-auto d-block">
     <ng-container
-      *ngTemplateOutlet="  tree;   context: {  $implicit: nodes  }
+      *ngTemplateOutlet="  tree;   context: {  $implicit: nodeItems  }
       "
     ></ng-container>
     <ng-template #tree let-allItems>

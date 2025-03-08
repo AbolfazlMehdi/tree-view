@@ -29,6 +29,8 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
 
   @Input() nodes: any[] = []
 
+  nodeItems: any[] = []
+
   constructor() {
   }
 
@@ -53,9 +55,20 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    this.nodeItems = [...this.nodes];
+    this.assignParents(this.nodeItems, null);
   }
 
   ngOnDestroy(): void {
+  }
+
+  assignParents(nodes: TreeNode[], parent: TreeNode | null) {
+    nodes.forEach((node: any) => {
+      node.parent = parent;
+      if (node.children) {
+        this.assignParents(node.children, node);
+      }
+    });
   }
 
   toggleSelection(node: TreeNode) {
@@ -90,7 +103,7 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
   }
 
   updateParentsBaseOnSomeChildrenSelected(node: TreeNode) {
-    if (node.parent && !node.parent.selected ) {
+    if (node.parent && !node.parent.selected) {
       node.parent['childIsSelected'] = node.parent.children?.some(child => child.selected || child['childIsSelected']);
       this.updateParentsBaseOnSomeChildrenSelected(node.parent);
     }

@@ -20,7 +20,7 @@
               </svg>
               <div class="node-item-label" [ngClass]="{'single-node' : !item.children}">
 
-                <label class="container-check me-2"  >
+                <label class="container-check me-2">
                   <input
                     (change)="toggleSelection(item)"
                     [checked]="item.selected"
@@ -31,8 +31,7 @@
                     [ngClass]="{ alignCheckbox: item.childIsSelected }"
                   ></span>
                 </label>
-<!--                <input type="checkbox" [checked]="item.selected" (change)="toggleSelection(item)">-->
-               <span> {{ item.name }}</span>
+                <span> {{ item.name }}</span>
               </div>
             </div>
 

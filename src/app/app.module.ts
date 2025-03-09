@@ -1,8 +1,8 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
 
-import { AppComponent } from './app.component';
-import {AngularTreeDataModule} from "./angular-tree-data/angular-tree-data.module";
+import {AppComponent} from './app.component';
+import {AngularTreeDataComponent} from "./angular-tree-data/angular-tree-data.component";
 
 @NgModule({
   declarations: [
@@ -10,9 +10,10 @@ import {AngularTreeDataModule} from "./angular-tree-data/angular-tree-data.modul
   ],
   imports: [
     BrowserModule,
-    AngularTreeDataModule
+    AngularTreeDataComponent
   ],
   providers: [],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

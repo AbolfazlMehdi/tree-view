@@ -9,11 +9,14 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
+import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {TreeNode} from "../model/tree-node.model";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'angular-tree-data',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './angular-tree-data.component.html',
   styleUrls: ['./angular-tree-data.component.scss'],
   providers: [{
@@ -25,11 +28,15 @@ import {TreeNode} from "../model/tree-node.model";
 })
 export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, OnDestroy, OnChanges {
 
+  @Input() multiSelection: boolean = false;
+  @Input() showCheckBox: boolean = true
+
   @Output() selectionChange = new EventEmitter<TreeNode[]>();
 
   @Input() nodes: any[] = []
 
   nodeItems: any[] = []
+  singleSelected!: string
 
   constructor() {
   }
@@ -71,18 +78,22 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
     });
   }
 
+  /**
+   call this method when multiSelect is false
+   * */
+  public toggleSingleSelection(node: TreeNode): void {
+    this.singleSelected = node.id;
+  }
+
   toggleSelection(node: TreeNode) {
     node.selected = !node.selected;
     this.updateChildren(node, node.selected);
     this.updateParentsBaseOnFullChildrenSelected(node);
     this.updateParentsBaseOnSomeChildrenSelected(node);
-    // this.emitSelection();
   }
 
   updateChildren(node: TreeNode, selected: boolean) {
-    if (node.selected) {
-      node['childIsSelected'] = false;
-    }
+    node['childIsSelected'] = false;
     if (node.children) {
       node.children.forEach(child => {
         child.selected = selected;
@@ -90,6 +101,7 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
       });
     }
   }
+
 
   updateParentsBaseOnFullChildrenSelected(node: TreeNode) {
     if (node.parent) {

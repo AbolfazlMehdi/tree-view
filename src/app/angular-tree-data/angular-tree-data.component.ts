@@ -28,12 +28,17 @@ import {CommonModule} from "@angular/common";
 })
 export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, OnDestroy, OnChanges {
 
-  @Input() multiSelection: boolean = false;
-  @Input() showCheckBox: boolean = true
+  @Input() multiSelection: boolean = true;
+  @Input() showCheckBox: boolean = true;
+  @Input() selectionMode: 'recursive' | 'Separate' = 'recursive';
 
   @Output() selectionChange = new EventEmitter<TreeNode[]>();
 
   @Input() nodes: any[] = []
+
+  @Input() bindChild: string = 'children';
+  @Input() bindTitle: string = 'name';
+  @Input() bindValue: string = 'id';
 
   nodeItems: any[] = []
   singleSelected!: string
@@ -85,11 +90,14 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
     this.singleSelected = node.id;
   }
 
-  toggleSelection(node: TreeNode) {
+ public toggleSelection(node: TreeNode): void {
     node.selected = !node.selected;
-    this.updateChildren(node, node.selected);
-    this.updateParentsBaseOnFullChildrenSelected(node);
-    this.updateParentsBaseOnSomeChildrenSelected(node);
+    if (this.selectionMode === 'recursive') {
+      this.updateChildren(node, node.selected);
+      this.updateParentsBaseOnFullChildrenSelected(node);
+      this.updateParentsBaseOnSomeChildrenSelected(node);
+    }
+
   }
 
   updateChildren(node: TreeNode, selected: boolean) {

@@ -10,7 +10,7 @@
           <li class="node">
             <div class="node-item-content">
               <svg
-                *ngIf="item.children" (click)="toggleExpand(item)"
+                *ngIf="item[bindChild]" (click)="toggleExpand(item)"
                 xmlns="http://www.w3.org/2000/svg" width="16" height="16"
                 fill="currentColor" class="bi bi-chevron-down icon-node" viewBox="0 0 16 16"
                 [ngClass]="{'open-node': item.expanded }"
@@ -18,24 +18,24 @@
                 <path fill-rule="evenodd"
                       d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
               </svg>
-              <div class="node-item-label" [ngClass]="{'single-node' : !item.children}">
+              <div class="node-item-label" [ngClass]="{'single-node' : !item[bindChild]}">
                 <ng-container *ngIf="multiSelection">
                   <label class="container-check me-2" *ngIf="showCheckBox">
                     <input (change)="toggleSelection(item)"
                            [checked]="item.selected" type="checkbox"/>
                     <span class="checkmark-check lh-1" [ngClass]="{ alignCheckbox: item.childIsSelected }"></span>
                   </label>
-                  <p (click)="toggleSelection(item)"> {{ item.name }}</p>
+                  <p (click)="toggleSelection(item)"> {{ item[bindTitle] }}</p>
                 </ng-container>
                 <ng-container *ngIf="!multiSelection">
                   <label class="container-check me-2" *ngIf="showCheckBox">
                     <input (change)="toggleSingleSelection(item)"
-                           [checked]="item.id === singleSelected" type="checkbox"/>
+                           [checked]="item[bindValue] === singleSelected" type="checkbox"/>
                     <span class="checkmark-check lh-1"></span>
                   </label>
                   <p (click)="toggleSingleSelection(item)"
-                  [ngClass]="{'selected-node' : (item.id === singleSelected && !showCheckBox )}"
-                  > {{ item.name }}</p>
+                  [ngClass]="{'selected-node' : (item[bindValue] === singleSelected && !showCheckBox )}"
+                  > {{ item[bindTitle] }}</p>
 
                 </ng-container>
 
@@ -43,10 +43,10 @@
             </div>
 
 
-            <ng-container *ngIf="item.children && item.expanded"
+            <ng-container *ngIf="item[bindChild] && item.expanded"
             >
               <ng-container
-                *ngTemplateOutlet="tree;context:{ $implicit: item.children }"
+                *ngTemplateOutlet="tree;context:{ $implicit: item[bindChild] }"
               ></ng-container>
             </ng-container>
           </li>

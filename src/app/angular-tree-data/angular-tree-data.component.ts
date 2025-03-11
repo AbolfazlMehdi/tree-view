@@ -28,7 +28,7 @@ import {CommonModule} from "@angular/common";
 })
 export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, OnDestroy, OnChanges {
 
-  @Input() multiSelection: boolean = true;
+  @Input() multiSelection: boolean = false;
   @Input() showCheckBox: boolean = true;
   @Input() selectionMode: 'recursive' | 'Separate' = 'recursive';
 
@@ -41,7 +41,9 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
   @Input() bindValue: string = 'id';
 
   nodeItems: any[] = []
-  singleSelected!: string
+  singleSelected: string | null = null
+
+  selectedNode: TreeNode[] = []
 
   constructor() {
   }
@@ -87,10 +89,19 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
    call this method when multiSelect is false
    * */
   public toggleSingleSelection(node: TreeNode): void {
-    this.singleSelected = node.id;
+    const selectedNode = this.selectedNode.find(x => x[this.bindValue] === node[this.bindValue])
+
+    if (selectedNode) {
+      this.singleSelected = null;
+      this.selectedNode = [];
+    } else {
+      this.singleSelected = node[this.bindValue];
+      this.selectedNode = [node];
+    }
+
   }
 
- public toggleSelection(node: TreeNode): void {
+  public toggleSelection(node: TreeNode): void {
     node.selected = !node.selected;
     if (this.selectionMode === 'recursive') {
       this.updateChildren(node, node.selected);
@@ -131,6 +142,11 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
 
   toggleExpand(node: TreeNode) {
     node.expanded = !node.expanded;
+  }
+
+  onRemoveSingleSelected() {
+    this.singleSelected = null;
+    this.selectedNode = [];
   }
 
   emitSelection() {

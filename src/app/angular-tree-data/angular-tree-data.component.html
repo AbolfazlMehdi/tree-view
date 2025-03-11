@@ -1,4 +1,10 @@
 <div class="form-floating tree-select-content position-relative w-100 border bg-white rounded border-custom-tree">
+  <div class="selected-node">
+    <ng-container *ngFor="let item of selectedNode">
+      <div *ngIf="!multiSelection" (click)="onRemoveSingleSelected()">{{item[bindTitle]}}</div>
+    </ng-container>
+
+  </div>
   <div class="tree-select-menu position-absolute w-100 border border-custom-tree bg-white px-2 overflow-auto d-block">
     <ng-container
       *ngTemplateOutlet="  tree;   context: {  $implicit: nodes  }
@@ -34,7 +40,7 @@
                     <span class="checkmark-check lh-1"></span>
                   </label>
                   <p (click)="toggleSingleSelection(item)"
-                  [ngClass]="{'selected-node' : (item[bindValue] === singleSelected && !showCheckBox )}"
+                     [ngClass]="{'selected-node' : (item[bindValue] === singleSelected && !showCheckBox )}"
                   > {{ item[bindTitle] }}</p>
 
                 </ng-container>

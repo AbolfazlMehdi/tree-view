@@ -1,3 +1,21 @@
+.tree-select-content{
+  .selected-node{
+    background-color: transparent;
+    border: 1px solid #c4c4c4;
+    padding: 0 8px;
+    border-radius: 6px;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    div{
+      background-color: #d1d1d1;
+      padding: 4px 8px;
+      border-radius: 2px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+  }
+}
 ul {
   list-style-type: none;
   padding-left: 23px;
@@ -11,6 +29,16 @@ ul {
       display: flex;
       align-items: center;
       margin-bottom: 8px;
+      .icon-node {
+        transform: rotate(0deg);
+        transition: .2s all;
+        margin-right: 7px;
+        cursor: pointer;
+      }
+      .open-node {
+        transform: rotate(-90deg);
+        transition: .2s all;
+      }
     }
 
     .node-item-label {
@@ -36,8 +64,10 @@ ul {
       }
     }
   }
-
 }
+
+
+
 
 
 /**
@@ -136,108 +166,3 @@ start check box style
 /**
 end check box style
 */
------------------------------------
-.tree {
-  padding: 0;
-}
-
-
-.icon-node {
-  transform: rotate(0deg);
-  transition: .2s all;
-  margin-right: 7px;
-  cursor: pointer;
-}
-
-.open-node {
-  transform: rotate(-90deg);
-  transition: .2s all;
-}
-
-.root-item {
-  display: flex;
-  width: 100%;
-  align-items: center
-}
-
-.tree > li {
-  border-bottom: 1px solid #cfcfcf;
-  padding: 4px 0;
-  line-height: 30px;
-  list-style: none;
-
-  &:last-of-type {
-    border-bottom: 0;
-  }
-}
-
-.single-root {
-  margin-left: 20px;
-}
-
-.checkbox-span {
-  width: 25px;
-  position: relative;
-}
-
-.rtl {
-  direction: rtl;
-
-  .parent-node {
-    margin-right: 15px !important;
-    margin-left: 0 !important;
-  }
-
-  .single-root {
-    margin-left: 0 !important;
-    margin-right: 20px !important;
-  }
-
-  .icon-node {
-    margin-right: 0;
-    margin-left: 7px;
-  }
-
-  .open-node {
-    transform: rotate(-90deg);
-  }
-}
-
-.tree ul li {
-  padding: 3px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: start;
-
-}
-
-
-.title-tree {
-  padding: 0 5px;
-  display: inline-block;
-  font-size: 14px;
-  font-weight: 600;
-  width: calc(100% - 30px);
-  cursor: pointer;
-  font-family: sans-serif;
-}
-
-.title-icon {
-  float: left;
-  line-height: 24px;
-  color: #777777;
-}
-
-.parent-node {
-  padding-top: 7px;
-  margin-left: 15px;
-}
-
-
-.child-node {
-  display: inline-block;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 12px;
-  font-weight: normal;
-}

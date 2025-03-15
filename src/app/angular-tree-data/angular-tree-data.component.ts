@@ -28,11 +28,11 @@ import {CommonModule} from "@angular/common";
 })
 export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, OnDestroy, OnChanges {
 
-  @Input() multiSelection: boolean = false;
+  @Input() multiSelection: boolean = true;
   @Input() showCheckBox: boolean = true;
-  @Input() selectionMode: 'recursive' | 'Separate' = 'recursive';
+  @Input() selectionMode: 'recursive' | 'separate' = 'separate';
 
-  @Output() selectionChange = new EventEmitter<TreeNode[]>();
+  @Output() selectionChange = new EventEmitter<TreeNode[] | TreeNode | null>();
 
   @Input() nodes: any[] = []
 
@@ -43,7 +43,7 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
   nodeItems: any[] = []
   singleSelected: string | null = null
 
-  selectedNode: TreeNode[] = []
+  selectedNode: TreeNode[]   = []
 
   constructor() {
   }
@@ -89,20 +89,35 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
    call this method when multiSelect is false
    * */
   public toggleSingleSelection(node: TreeNode): void {
-    const selectedNode = this.selectedNode.find(x => x[this.bindValue] === node[this.bindValue])
-
+    const selectedNode: TreeNode | undefined = this.selectedNode.find(x => x[this.bindValue] === node[this.bindValue])
     if (selectedNode) {
       this.singleSelected = null;
       this.selectedNode = [];
+      this.selectionChange.emit(null);
+      this.onChange(null)
     } else {
       this.singleSelected = node[this.bindValue];
-      this.selectedNode = [node];
+      this.selectedNode = [node]
+      this.selectionChange.emit(node);
+      this.onChange(node)
     }
-
   }
+
+  public onRemoveSingleSelected(): void {
+    this.singleSelected = null;
+    this.selectedNode = [];
+    this.onChange(null);
+    this.selectionChange.emit(null);
+  }
+
 
   public toggleSelection(node: TreeNode): void {
     node.selected = !node.selected;
+
+    if (this.selectionMode === 'separate') {
+      this.fillSelectedSeparateNode(node);
+    }
+
     if (this.selectionMode === 'recursive') {
       this.updateChildren(node, node.selected);
       this.updateParentsBaseOnFullChildrenSelected(node);
@@ -110,6 +125,21 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
     }
 
   }
+
+  private fillSelectedSeparateNode(node: TreeNode): void {
+    if (node.selected) {
+      this.setSelectedNode(node);
+    } else {
+      this.selectedNode = this.selectedNode.filter((x: TreeNode): boolean => x[this.bindValue] !== node[this.bindValue])
+    }
+    this.selectionChange.emit(this.selectedNode);
+    this.onChange(this.selectedNode)
+  }
+
+  setSelectedNode(node: TreeNode): void {
+    this.selectedNode.push(node);
+  }
+
 
   updateChildren(node: TreeNode, selected: boolean) {
     node['childIsSelected'] = false;
@@ -129,6 +159,8 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
       if (allSiblingsSelected) {
         node.parent['childIsSelected'] = false;
       }
+      console.log(node.parent)
+
       this.updateParentsBaseOnFullChildrenSelected(node.parent);
     }
   }
@@ -144,14 +176,10 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
     node.expanded = !node.expanded;
   }
 
-  onRemoveSingleSelected() {
-    this.singleSelected = null;
-    this.selectedNode = [];
-  }
 
   emitSelection() {
     const selectedNodes = this.getSelectedNodes(this.nodes);
-    this.selectionChange.emit(selectedNodes);
+    this.selectionChange.emit(selectedNodes[0]);
   }
 
   getSelectedNodes(nodes: TreeNode[]): TreeNode[] {

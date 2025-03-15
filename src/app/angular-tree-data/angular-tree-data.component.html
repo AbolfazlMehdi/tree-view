@@ -2,6 +2,7 @@
   <div class="selected-node">
     <ng-container *ngFor="let item of selectedNode">
       <div *ngIf="!multiSelection" (click)="onRemoveSingleSelected()">{{item[bindTitle]}}</div>
+      <div *ngIf="multiSelection">{{item[bindTitle]}}</div>
     </ng-container>
 
   </div>
@@ -40,7 +41,7 @@
                     <span class="checkmark-check lh-1"></span>
                   </label>
                   <p (click)="toggleSingleSelection(item)"
-                     [ngClass]="{'selected-node' : (item[bindValue] === singleSelected && !showCheckBox )}"
+                     [ngClass]="{'selected-node-item' : (item[bindValue] === singleSelected && !showCheckBox )}"
                   > {{ item[bindTitle] }}</p>
 
                 </ng-container>

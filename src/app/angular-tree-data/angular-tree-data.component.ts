@@ -113,7 +113,7 @@ export class AngularTreeDataComponent implements OnInit, ControlValueAccessor, O
 
   public toggleSelection(node: TreeNode): void {
     node.selected = !node.selected;
-
+    this.selectionChange.emit(node);
     if (this.selectionMode === 'separate') {
       this.fillSelectedSeparateNode(node);
     }

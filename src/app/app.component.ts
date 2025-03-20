@@ -18,7 +18,7 @@ constructor() {
             { id: '1.1-1', name: 'Carrot', selected: false },
             { id: '1.1-2', name: 'Broccoli', selected: false ,  children: [
                 { id: '1.1-1-1', name: 'Carrot', selected: false },
-                { id: '1.1-2-2', name: 'Broccoli', selected: false },
+                { id: '1.1-2-2', name: 'Broccoli2', selected: false },
               ]},
           ] },
         { id: '1.2', name: 'Orange', selected: false },
@@ -26,8 +26,8 @@ constructor() {
     },
     {
       id: '2', name: 'Vegetables', selected: false,  expanded: false,children: [
-        { id: '2.1', name: 'Carrot', selected: false },
-        { id: '2.2', name: 'Broccoli', selected: false },
+        { id: '2.1', name: 'Carrot3', selected: false },
+        { id: '2.2', name: 'Broccoli3', selected: false },
       ]
     }
   ];

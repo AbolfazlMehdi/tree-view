@@ -96,7 +96,7 @@ export class AngularTreeDataComponent
       this.singleSelected = node[this.bindValue];
       this.selectedNode = [node];
       this.selectionChange.emit(node);
-      this.onChange(node);
+      this.onChange(this.singleSelected);
     }
   }
 
@@ -178,7 +178,8 @@ export class AngularTreeDataComponent
   emitMultiSelection() {
     const selectedNodes = this.getSelectedNodes(this.nodes);
     this.selectedNode = selectedNodes;
-    this.onChange(selectedNodes);
+    const selectedValues = selectedNodes.map((v) => v[this.bindValue]); 
+    this.onChange(selectedValues);
   }
 
   getSelectedNodes(nodes: TreeNode[]): TreeNode[] {

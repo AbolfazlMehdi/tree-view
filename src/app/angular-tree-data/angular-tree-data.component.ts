@@ -7,11 +7,15 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges
+  SimpleChanges,
 } from '@angular/core';
-import {ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {TreeNode} from "../model/tree-node.model";
-import {CommonModule} from "@angular/common";
+import {
+  ControlValueAccessor,
+  FormsModule,
+  NG_VALUE_ACCESSOR,
+} from '@angular/forms';
+import { TreeNode } from '../model/tree-node.model';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'angular-tree-data',
@@ -84,34 +88,42 @@ export class AngularTreeDataComponent
    call this method when multiSelect is false
    * */
   public toggleSingleSelection(node: TreeNode): void {
-    const selectedNode: TreeNode | undefined = this.selectedNode.find(
+    const isSelectedNode: TreeNode | undefined = this.selectedNode.find(
       (x) => x[this.bindValue] === node[this.bindValue]
     );
-    if (selectedNode) {
-      this.singleSelected = null;
-      this.selectedNode = [];
-      this.selectionChange.emit(null);
-      this.onChange(null);
+    if (isSelectedNode) {
+      this.onRemoveSingleSelected(node);
     } else {
-      this.singleSelected = node[this.bindValue];
-      this.selectedNode = [node];
-      this.selectionChange.emit(node);
-      this.onChange(this.singleSelected);
+      const newNode = this.removeExtraProperty(node);
+      newNode.selected = true;
+      this.fillSingleSelectedValue(node[this.bindValue], [node], newNode);
     }
   }
 
-  public onRemoveSingleSelected(): void {
-    this.singleSelected = null;
-    this.selectedNode = [];
-    this.onChange(null);
-    this.selectionChange.emit(null);
+  public onRemoveSingleSelected(node: TreeNode): void {
+    const newNode = this.removeExtraProperty(node);
+    newNode.selected = false;
+    this.fillSingleSelectedValue(null, [], newNode);
   }
 
-  public toggleSelection(node: TreeNode): void {
+  private fillSingleSelectedValue(
+    singleSelected: string | null,
+    node: TreeNode[] | [],
+    emitedNode: TreeNode
+  ): void {
+    this.singleSelected = singleSelected;
+    this.selectedNode = node;
+    this.onChange(this.singleSelected);
+    this.selectionChange.emit(emitedNode);
+  }
+
+  public toggleMultiSelection(node: TreeNode): void {
     node.selected = !node.selected;
-    this.selectionChange.emit(node);
+    const newNode = this.removeExtraProperty(node);
+    this.selectionChange.emit(newNode);
     if (this.selectionMode === 'separate') {
       this.fillSelectedSeparateNode(node);
+      return;
     }
 
     if (this.selectionMode === 'recursive') {
@@ -124,18 +136,14 @@ export class AngularTreeDataComponent
 
   private fillSelectedSeparateNode(node: TreeNode): void {
     if (node.selected) {
-      this.setSelectedNode(node);
+      this.selectedNode.push(node);
     } else {
       this.selectedNode = this.selectedNode.filter(
         (x: TreeNode): boolean => x[this.bindValue] !== node[this.bindValue]
       );
     }
-    this.selectionChange.emit(this.selectedNode);
-    this.onChange(this.selectedNode);
-  }
-
-  setSelectedNode(node: TreeNode): void {
-    this.selectedNode.push(node);
+    const selectedValues = this.selectedNode.map((v) => v[this.bindValue]);
+    this.onChange(selectedValues);
   }
 
   updateChildren(node: TreeNode, selected: boolean) {
@@ -156,8 +164,6 @@ export class AngularTreeDataComponent
       if (allSiblingsSelected) {
         node.parent['childIsSelected'] = false;
       }
-      console.log(node.parent);
-
       this.updateParentsBaseOnFullChildrenSelected(node.parent);
     }
   }
@@ -171,14 +177,10 @@ export class AngularTreeDataComponent
     }
   }
 
-  toggleExpand(node: TreeNode) {
-    node.expanded = !node.expanded;
-  }
-
   emitMultiSelection() {
     const selectedNodes = this.getSelectedNodes(this.nodes);
     this.selectedNode = selectedNodes;
-    const selectedValues = selectedNodes.map((v) => v[this.bindValue]); 
+    const selectedValues = selectedNodes.map((v) => v[this.bindValue]);
     this.onChange(selectedValues);
   }
 
@@ -194,5 +196,15 @@ export class AngularTreeDataComponent
     });
     return selected;
   }
-}
 
+  private removeExtraProperty(node: TreeNode): any {
+    const newNode: TreeNode = { ...node };
+    delete newNode.parent;
+    delete newNode['childIsSelected'];
+    return newNode;
+  }
+
+  toggleExpand(node: TreeNode) {
+    node.expanded = !node.expanded;
+  }
+}

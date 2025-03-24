@@ -1,14 +1,19 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TreeNode} from "./model/tree-node.model";
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'angular-tree-view';
   items: TreeNode[] = [];
+
+  form = new FormGroup({
+    name: new FormControl({value: "1.2" , disabled: false}),
+  });
 
   constructor() {
     this.items = [
@@ -52,7 +57,20 @@ export class AppComponent {
     ];
   }
 
+  ngOnInit(): void {
+    this.form.get('name')?.valueChanges.subscribe({
+      next: (res) => {
+        console.log('res', res);
+      },
+    });
+  }
+
   onSelect(e: any) {
-    console.log(e)
+    console.log(e);
+  }
+  onChangeValue() {
+    const val: any = '1.1';
+    this.form.get('name')?.setValue(val, { emitEvent: false });
+    
   }
 }

@@ -1,7 +1,12 @@
 <div style="width: 20%">
-  <angular-tree-data [nodes]="items"
+<form [formGroup]="form">
+    <angular-tree-data [items]="items"
+    formControlName="name"
+    [multiSelection]="false"
   [selectionMode]="'separate'"
   
   (selectionChange)="onSelect($event)"></angular-tree-data>
+</form>
 
 </div>
+<button (click)="onChangeValue()">click</button>

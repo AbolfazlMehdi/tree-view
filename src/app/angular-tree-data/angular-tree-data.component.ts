@@ -34,13 +34,15 @@ import { CommonModule } from '@angular/common';
 export class AngularTreeDataComponent
   implements OnInit, ControlValueAccessor, OnDestroy, OnChanges
 {
+  private value: null | undefined | number | string | string[] | number[] =
+    undefined;
   @Input() multiSelection: boolean = true;
   @Input() showCheckBox: boolean = true;
   @Input() selectionMode: 'recursive' | 'separate' = 'recursive';
 
   @Output() selectionChange = new EventEmitter<TreeNode[] | TreeNode | null>();
 
-  @Input() nodes: any[] = [];
+  @Input() items: any[] = [];
 
   @Input() bindChild: string = 'children';
   @Input() bindTitle: string = 'name';
@@ -50,15 +52,23 @@ export class AngularTreeDataComponent
   singleSelected: string | null = null;
 
   selectedNode: TreeNode[] = [];
-
-  constructor() {}
-
   onChange: any = () => {};
   onTouched: any = () => {};
+  constructor() {}
 
   ngOnInit(): void {}
 
-  public writeValue(obj: any): void {}
+  public writeValue(val: any): void { 
+    this.value = val;
+    if (
+      !this.multiSelection &&
+      this.value !== null &&
+      this.value !== undefined &&
+      this.items.length
+    ) {
+      this.setDefualtValueOfSingleSelection(this.items);
+    }
+  }
 
   public registerOnChange(fn: any): void {
     this.onChange = fn;
@@ -69,8 +79,29 @@ export class AngularTreeDataComponent
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.nodeItems = [...this.nodes];
+    this.nodeItems = [...this.items];
     this.assignParents(this.nodeItems, null);
+    if (
+      !this.multiSelection &&
+      this.value !== null &&
+      this.value !== undefined &&
+      this.items.length
+    ) {
+      this.setDefualtValueOfSingleSelection(this.items);
+    }
+  }
+
+  private setDefualtValueOfSingleSelection(nodes: TreeNode[]): void { 
+   
+    nodes.forEach((node) => {
+      if (node[this.bindValue] === this.value) {
+        this.toggleSingleSelection(node, true);
+        return;
+      }
+      if (node[this.bindChild] && node[this.bindChild].length) {
+        this.setDefualtValueOfSingleSelection(node[this.bindChild]);
+      }
+    });
   }
 
   ngOnDestroy(): void {}
@@ -87,7 +118,10 @@ export class AngularTreeDataComponent
   /**
    call this method when multiSelect is false
    * */
-  public toggleSingleSelection(node: TreeNode): void {
+  public toggleSingleSelection(
+    node: TreeNode,
+    defaultSetValue: boolean = false
+  ): void {
     const isSelectedNode: TreeNode | undefined = this.selectedNode.find(
       (x) => x[this.bindValue] === node[this.bindValue]
     );
@@ -96,7 +130,12 @@ export class AngularTreeDataComponent
     } else {
       const newNode = this.removeExtraProperty(node);
       newNode.selected = true;
-      this.fillSingleSelectedValue(node[this.bindValue], [node], newNode);
+      this.fillSingleSelectedValue(
+        node[this.bindValue],
+        [node],
+        newNode,
+        defaultSetValue
+      );
     }
   }
 
@@ -109,12 +148,16 @@ export class AngularTreeDataComponent
   private fillSingleSelectedValue(
     singleSelected: string | null,
     node: TreeNode[] | [],
-    emitedNode: TreeNode
+    emitedNode: TreeNode,
+    defaultSetValue: boolean = false
   ): void {
     this.singleSelected = singleSelected;
     this.selectedNode = node;
-    this.onChange(this.singleSelected);
-    this.selectionChange.emit(emitedNode);
+    if (!defaultSetValue) {
+          this.onChange(this.singleSelected);
+          this.selectionChange.emit(emitedNode);
+    }
+
   }
 
   public toggleMultiSelection(node: TreeNode): void {
@@ -178,7 +221,7 @@ export class AngularTreeDataComponent
   }
 
   emitMultiSelection() {
-    const selectedNodes = this.getSelectedNodes(this.nodes);
+    const selectedNodes = this.getSelectedNodes(this.items);
     this.selectedNode = selectedNodes;
     const selectedValues = selectedNodes.map((v) => v[this.bindValue]);
     this.onChange(selectedValues);

@@ -12,7 +12,10 @@ export class AppComponent implements OnInit {
   items: TreeNode[] = [];
 
   form = new FormGroup({
-    name: new FormControl({value: "1.2" , disabled: false}),
+    name: new FormControl({
+      value: ['1.2', '1.1-1-1', '2.2'],
+      disabled: false,
+    }),
   });
 
   constructor() {
@@ -35,7 +38,7 @@ export class AppComponent implements OnInit {
                 name: 'Broccoli',
                 selected: false,
                 children: [
-                  { id: '1.1-1-1', name: 'Carrot', selected: false },
+                  { id: '1.1-1-1', name: 'Carrot2', selected: false },
                   { id: '1.1-2-2', name: 'Broccoli2', selected: false },
                 ],
               },
@@ -71,6 +74,5 @@ export class AppComponent implements OnInit {
   onChangeValue() {
     const val: any = '1.1';
     this.form.get('name')?.setValue(val, { emitEvent: false });
-    
   }
 }

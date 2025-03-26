@@ -58,7 +58,16 @@ export class AngularTreeDataComponent
 
   ngOnInit(): void {}
 
-  public writeValue(val: any): void { 
+  public registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  public registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+  public writeValue(
+    val: null | undefined | number | string | string[] | number[] = undefined
+  ): void {
     this.value = val;
     if (
       !this.multiSelection &&
@@ -68,17 +77,19 @@ export class AngularTreeDataComponent
     ) {
       this.setDefualtValueOfSingleSelection(this.items);
     }
+    if (
+      this.multiSelection &&
+      this.value !== null &&
+      this.value !== undefined &&
+      this.items.length
+    ) {
+      if (this.selectionMode === 'separate') {
+        this.setDefualtValueOfSeperatedMode();
+      }
+    }
   }
 
-  public registerOnChange(fn: any): void {
-    this.onChange = fn;
-  }
-
-  public registerOnTouched(fn: any): void {
-    this.onTouched = fn;
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges() {
     this.nodeItems = [...this.items];
     this.assignParents(this.nodeItems, null);
     if (
@@ -89,10 +100,42 @@ export class AngularTreeDataComponent
     ) {
       this.setDefualtValueOfSingleSelection(this.items);
     }
+    if (
+      this.multiSelection &&
+      this.value !== null &&
+      this.value !== undefined &&
+      this.items.length
+    ) {
+      if (this.selectionMode === 'separate') {
+        this.setDefualtValueOfSeperatedMode();
+      }
+    }
+  }
+  setDefualtValueOfSeperatedMode() {
+    const values = Array.isArray(this.value) ? this.value : [];
+
+    const selectedNodes = this.loopOfValuesOnSeperatedMode(this.items, values);
+    this.selectedNode = selectedNodes;
   }
 
-  private setDefualtValueOfSingleSelection(nodes: TreeNode[]): void { 
-   
+  loopOfValuesOnSeperatedMode(nodes: TreeNode[], values: any[]): TreeNode[] {
+    let selected: TreeNode[] = [];
+    nodes.forEach((node) => {
+      const id = values.find((x: any) => x === node[this.bindValue]);
+      if (id) {
+        node.selected = true;
+        selected.push(node);
+      }
+      if (node.children) {
+        selected = selected.concat(
+          this.loopOfValuesOnSeperatedMode(node.children, values)
+        );
+      }
+    });
+    return selected;
+  }
+
+  private setDefualtValueOfSingleSelection(nodes: TreeNode[]): void {
     nodes.forEach((node) => {
       if (node[this.bindValue] === this.value) {
         this.toggleSingleSelection(node, true);
@@ -103,8 +146,6 @@ export class AngularTreeDataComponent
       }
     });
   }
-
-  ngOnDestroy(): void {}
 
   assignParents(nodes: TreeNode[], parent: TreeNode | null) {
     nodes.forEach((node: any) => {
@@ -154,10 +195,9 @@ export class AngularTreeDataComponent
     this.singleSelected = singleSelected;
     this.selectedNode = node;
     if (!defaultSetValue) {
-          this.onChange(this.singleSelected);
-          this.selectionChange.emit(emitedNode);
+      this.onChange(this.singleSelected);
+      this.selectionChange.emit(emitedNode);
     }
-
   }
 
   public toggleMultiSelection(node: TreeNode): void {
@@ -250,4 +290,6 @@ export class AngularTreeDataComponent
   toggleExpand(node: TreeNode) {
     node.expanded = !node.expanded;
   }
+
+  ngOnDestroy(): void {}
 }

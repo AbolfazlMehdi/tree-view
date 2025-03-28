@@ -13,7 +13,7 @@ export class AppComponent implements OnInit {
 
   form = new FormGroup({
     name: new FormControl({
-      value: ['1.2', '1.1-1-1', '2.2'],
+      value: [ '1.1-1-1', '2.2'],
       disabled: false,
     }),
   });
@@ -72,7 +72,7 @@ export class AppComponent implements OnInit {
     console.log(e);
   }
   onChangeValue() {
-    const val: any = '1.1';
-    this.form.get('name')?.setValue(val, { emitEvent: false });
+    const val: any = '2';
+    this.form.get('name')?.setValue([val], { emitEvent: false });
   }
 }

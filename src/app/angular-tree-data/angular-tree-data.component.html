@@ -30,7 +30,7 @@
                   <label class="container-check me-2" *ngIf="showCheckBox">
                     <input (change)="toggleMultiSelection(item)"
                            [checked]="item.selected" type="checkbox"/>
-                    <span class="checkmark-check lh-1" [ngClass]="{ alignCheckbox: item.childIsSelected }"></span>
+                    <span class="checkmark-check lh-1" [ngClass]="{ alignCheckbox: item.someChildIsSelected }"></span>
                   </label>
                   <p (click)="toggleMultiSelection(item)"> {{ item[bindTitle] }}</p>
                 </ng-container>

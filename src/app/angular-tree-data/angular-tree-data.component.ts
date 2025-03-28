@@ -83,9 +83,7 @@ export class AngularTreeDataComponent
       this.value !== undefined &&
       this.items.length
     ) {
-      if (this.selectionMode === 'separate') {
-        this.setDefualtValueOfSeperatedMode();
-      }
+      this.setDefualtValueOfSeperatedMode();
     }
   }
 
@@ -106,29 +104,43 @@ export class AngularTreeDataComponent
       this.value !== undefined &&
       this.items.length
     ) {
-      if (this.selectionMode === 'separate') {
-        this.setDefualtValueOfSeperatedMode();
-      }
+      this.setDefualtValueOfSeperatedMode();
     }
   }
   setDefualtValueOfSeperatedMode() {
     const values = Array.isArray(this.value) ? this.value : [];
-
     const selectedNodes = this.loopOfValuesOnSeperatedMode(this.items, values);
     this.selectedNode = selectedNodes;
+    console.log(this.items);
   }
 
   loopOfValuesOnSeperatedMode(nodes: TreeNode[], values: any[]): TreeNode[] {
     let selected: TreeNode[] = [];
     nodes.forEach((node) => {
+      delete node['someChildIsSelected'];
       const id = values.find((x: any) => x === node[this.bindValue]);
       if (id) {
         node.selected = true;
         selected.push(node);
       }
-      if (node.children) {
+      else if (node.parent){
+         node.selected = false;
+      }
+      if (this.selectionMode === 'recursive') {
+        this.updateChildren(node, node.selected ?? false);
+        this.updateParentsBaseOnFullChildrenSelected(node);
+        this.updateParentsBaseOnSomeChildrenSelected(node);
+      }
+      if (
+        node?.parent?.[this.bindChild] &&
+        !node.parent['someChildIsSelected'] &&
+        !node?.parent.selected
+      ) {
+        node.selected = false;
+      }
+      if (node[this.bindChild]) {
         selected = selected.concat(
-          this.loopOfValuesOnSeperatedMode(node.children, values)
+          this.loopOfValuesOnSeperatedMode(node[this.bindChild], values)
         );
       }
     });
@@ -150,8 +162,8 @@ export class AngularTreeDataComponent
   assignParents(nodes: TreeNode[], parent: TreeNode | null) {
     nodes.forEach((node: any) => {
       node.parent = parent;
-      if (node.children) {
-        this.assignParents(node.children, node);
+      if (node[this.bindChild]) {
+        this.assignParents(node[this.bindChild], node);
       }
     });
   }
@@ -230,9 +242,9 @@ export class AngularTreeDataComponent
   }
 
   updateChildren(node: TreeNode, selected: boolean) {
-    node['childIsSelected'] = false;
-    if (node.children) {
-      node.children.forEach((child) => {
+    node['someChildIsSelected'] = false;
+    if (node[this.bindChild]) {
+      node[this.bindChild].forEach((child: TreeNode) => {
         child.selected = selected;
         this.updateChildren(child, selected);
       });
@@ -241,11 +253,12 @@ export class AngularTreeDataComponent
 
   updateParentsBaseOnFullChildrenSelected(node: TreeNode) {
     if (node.parent) {
-      const allSiblingsSelected: boolean | undefined =
-        node.parent.children?.every((child) => child.selected);
+      const allSiblingsSelected: boolean | undefined = node.parent[
+        this.bindChild
+      ]?.every((child: TreeNode) => child.selected);
       node.parent.selected = allSiblingsSelected;
       if (allSiblingsSelected) {
-        node.parent['childIsSelected'] = false;
+        node.parent['someChildIsSelected'] = false;
       }
       this.updateParentsBaseOnFullChildrenSelected(node.parent);
     }
@@ -253,8 +266,8 @@ export class AngularTreeDataComponent
 
   updateParentsBaseOnSomeChildrenSelected(node: TreeNode) {
     if (node.parent && !node.parent.selected) {
-      node.parent['childIsSelected'] = node.parent.children?.some(
-        (child) => child.selected || child['childIsSelected']
+      node.parent['someChildIsSelected'] = node.parent[this.bindChild]?.some(
+        (child: TreeNode) => child.selected || child['someChildIsSelected']
       );
       this.updateParentsBaseOnSomeChildrenSelected(node.parent);
     }
@@ -273,8 +286,8 @@ export class AngularTreeDataComponent
       if (node.selected) {
         selected.push(node);
       }
-      if (node.children && !node.selected) {
-        selected = selected.concat(this.getSelectedNodes(node.children));
+      if (node[this.bindChild] && !node.selected) {
+        selected = selected.concat(this.getSelectedNodes(node[this.bindChild]));
       }
     });
     return selected;
@@ -283,7 +296,7 @@ export class AngularTreeDataComponent
   private removeExtraProperty(node: TreeNode): any {
     const newNode: TreeNode = { ...node };
     delete newNode.parent;
-    delete newNode['childIsSelected'];
+    delete newNode['someChildIsSelected'];
     return newNode;
   }
 

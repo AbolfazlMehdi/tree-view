@@ -56,9 +56,7 @@ export class AngularTreeDataComponent
     this.onTouched = fn;
   }
 
-  public writeValue(
-    val: null | number | string | string[] | number[] = null
-  ): void {
+  public writeValue(val: null | number | string | string[] | number[] = null): void {
     this.value = val;
     this.setDefaultValue();
   }
@@ -69,6 +67,10 @@ export class AngularTreeDataComponent
     this.setDefaultValue();
   }
 
+  /**
+   * bind default value
+   * call this method in OnChange or writeValue
+   */
   private setDefaultValue(): void {
     if (!this.multiSelection && this.value !== null && this.items.length) {
       this.setDefaultValueOfSingleSelection(this.items);
@@ -107,7 +109,7 @@ export class AngularTreeDataComponent
   private setDefaultValueOfSingleSelection(nodes: TreeNode[]): void {
     nodes.forEach((node: TreeNode) => {
       if (node[this.bindValue] === this.value) {
-        this.toggleSingleSelection(node, true);
+        this.fillDataInSingleSelectedMode(node, true)
         return;
       }
       if (node[this.bindChild] && node[this.bindChild].length) {
@@ -116,7 +118,7 @@ export class AngularTreeDataComponent
     });
   }
 
-  assignParents(nodes: TreeNode[], parent: TreeNode | null) {
+  private assignParents(nodes: TreeNode[], parent: TreeNode | null): void {
     nodes.forEach((node: any) => {
       node.parent = parent;
       if (node[this.bindChild]) {
@@ -133,10 +135,14 @@ export class AngularTreeDataComponent
     if (isSelectedNode) {
       this.onRemoveSingleSelected(node);
     } else {
-      const newNode = this.removeExtraProperty(node);
-      newNode.selected = true;
-      this.fillSingleSelectedValue(node[this.bindValue], [node], newNode, defaultSetValue);
+      this.fillDataInSingleSelectedMode(node, defaultSetValue)
     }
+  }
+
+  private fillDataInSingleSelectedMode(node: TreeNode, defaultSetValue: boolean = false): void {
+    const newNode = this.removeExtraProperty(node);
+    newNode.selected = true;
+    this.fillSingleSelectedValue(node[this.bindValue], [node], newNode, defaultSetValue);
   }
 
   public onRemoveSingleSelected(node: TreeNode): void {

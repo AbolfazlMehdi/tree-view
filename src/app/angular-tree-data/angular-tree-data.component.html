@@ -6,6 +6,7 @@
     </ng-container>
 
   </div>
+
   <div class="tree-select-menu position-absolute w-100 border border-custom-tree bg-white px-2 overflow-auto d-block">
     <ng-container
       *ngTemplateOutlet="  tree;   context: {  $implicit: items  }
@@ -40,11 +41,13 @@
                            [checked]="item[bindValue] === singleSelected" type="checkbox"/>
                     <span class="checkmark-check lh-1"></span>
                   </label>
+
                   <p (click)="toggleSingleSelection(item)"
                      [ngClass]="{'selected-node-item' : (item[bindValue] === singleSelected && !showCheckBox )}"
                   > {{ item[bindTitle] }}</p>
 
                 </ng-container>
+
 
               </div>
             </div>
@@ -64,4 +67,6 @@
   </div>
 
 </div>
+
+
 

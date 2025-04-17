@@ -56,7 +56,7 @@ export class AngularTreeDataComponent
     this.onTouched = fn;
   }
 
-  public writeValue(val: null | number | string | string[] | number[] = null): void {
+  public writeValue(val: undefined |  null | number | string | string[] | number[] = null): void {
     this.value = val;
     this.setDefaultValue();
   }
@@ -72,7 +72,7 @@ export class AngularTreeDataComponent
    * call this method in OnChange or writeValue
    */
   private setDefaultValue(): void {
-    if (!this.items.length || this.value === null) return;
+    if (!this.items.length ||  this.value === null  || this.value === undefined ) return;
     if (this.multiSelection ) {
       const values: string[] | number[] = Array.isArray(this.value) ? this.value : [];
       this.selectedNode = this.loopOfValuesOnSeperatedMode(this.items, values);

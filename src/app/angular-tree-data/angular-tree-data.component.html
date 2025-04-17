@@ -1,11 +1,4 @@
-<div class="form-floating tree-select-content position-relative w-100 border bg-white rounded border-custom-tree">
-  <div class="selected-node">
-    <ng-container *ngFor="let item of selectedNode">
-      <div *ngIf="!multiSelection" (click)="onRemoveSingleSelected(item)">{{item[bindTitle]}}</div>
-      <div *ngIf="multiSelection">{{item[bindTitle]}}</div>
-    </ng-container>
-
-  </div>
+ 
   <div class="tree-select-menu position-absolute w-100 border border-custom-tree bg-white px-2 overflow-auto d-block">
     <ng-container
       *ngTemplateOutlet="  tree;   context: {  $implicit: items  }
@@ -26,25 +19,11 @@
                       d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
               </svg>
               <div class="node-item-label" [ngClass]="{'single-node' : !item[bindChild]}">
-                <ng-container *ngIf="multiSelection">
-                  <label class="container-check me-2" *ngIf="showCheckBox">
-                    <input (change)="toggleMultiSelection(item)"
-                           [checked]="item.selected" type="checkbox"/>
-                    <span class="checkmark-check lh-1" [ngClass]="{ alignCheckbox: item.someChildIsSelected }"></span>
-                  </label>
-                  <p (click)="toggleMultiSelection(item)"> {{ item[bindTitle] }}</p>
-                </ng-container>
-                <ng-container *ngIf="!multiSelection">
-                  <label class="container-check me-2" *ngIf="showCheckBox">
-                    <input (change)="toggleSingleSelection(item)"
-                           [checked]="item[bindValue] === singleSelected" type="checkbox"/>
-                    <span class="checkmark-check lh-1"></span>
-                  </label>
+   
                   <p (click)="toggleSingleSelection(item)"
                      [ngClass]="{'selected-node-item' : (item[bindValue] === singleSelected && !showCheckBox )}"
                   > {{ item[bindTitle] }}</p>
-
-                </ng-container>
+ 
 
               </div>
             </div>
@@ -63,5 +42,4 @@
     </ng-template>
   </div>
 
-</div>
 

@@ -72,7 +72,7 @@ export class AppComponent implements OnInit {
     console.log(e);
   }
   onChangeValue() {
-    const val: any = '2';
-    this.form.get('name')?.setValue([val], { emitEvent: false });
+    const val: any = ['2' , '1.1-2-2'];
+    this.form.get('name')?.setValue(val, { emitEvent: false });
   }
 }

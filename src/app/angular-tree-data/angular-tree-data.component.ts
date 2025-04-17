@@ -72,24 +72,28 @@ export class AngularTreeDataComponent
    * call this method in OnChange or writeValue
    */
   private setDefaultValue(): void {
-    if (!this.multiSelection && this.value !== null && this.items.length) {
-      this.setDefaultValueOfSingleSelection(this.items);
-    }
-    if (this.multiSelection && this.value !== null && this.items.length) {
+    if (!this.items.length || this.value === null) return;
+    if (this.multiSelection ) {
       const values: string[] | number[] = Array.isArray(this.value) ? this.value : [];
       this.selectedNode = this.loopOfValuesOnSeperatedMode(this.items, values);
+    } else {
+      this.setDefaultValueOfSingleSelection(this.items);
     }
+
   }
 
   private loopOfValuesOnSeperatedMode(nodes: TreeNode[], values: any[]): TreeNode[] {
     let selected: TreeNode[] = [];
     nodes.forEach((node: TreeNode) => {
       delete node['someChildIsSelected'];
-      const id = values.find((x: any) => x === node[this.bindValue]);
-      if (id) {
-        node.selected = true;
+      const isSelected: boolean  = values.includes(node[this.bindValue]);
+      if (isSelected ) {
+        node.selected = isSelected;
         selected.push(node);
-      } else if ((node.parent && !node.parent.selected) || !node.parent) {
+      } else if (this.selectionMode === 'recursive' &&
+        (node.parent && !node.parent.selected) || !node.parent) {
+        node.selected = false;
+      } else if (this.selectionMode === 'separate' ) {
         node.selected = false;
       }
       if (this.selectionMode === 'recursive') {

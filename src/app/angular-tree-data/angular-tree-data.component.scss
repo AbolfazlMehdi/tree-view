@@ -86,10 +86,12 @@
 
       .node-item-content {
         flex-direction: row-reverse;
+
         .icon-node {
-          margin-right: 0!important;
+          margin-right: 0 !important;
           margin-left: 7px;
-          &.open-node{
+
+          &.open-node {
             transform: rotate(90deg);
           }
         }
@@ -97,7 +99,8 @@
 
         .node-item-label {
           flex-direction: row-reverse;
-          .container-check{
+
+          .container-check {
             margin-right: 0;
             margin-left: 10px;
           }
@@ -107,6 +110,22 @@
   }
 }
 
+.tree-select-menu {
+  background-color: #fff;
+  border: 1px solid #ebe7e7;
+  border-radius: 8px;
+  box-shadow: 0 0 10px 0 #ebe7e7;
+  margin-top: 4px;
+  display: none;
+  cursor: pointer;
+  &.open-tree-select-menu {
+    display: block;
+  }
+
+  ul {
+    margin: 6px 0;
+  }
+}
 
 /**
 start check box style

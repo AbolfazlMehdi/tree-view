@@ -2,7 +2,7 @@
 <form [formGroup]="form">
     <angular-tree-data [items]="items"
     formControlName="name"
-    [multiSelection]="true"
+    [multiSelection]="false"
   [selectionMode]="'separate'"
 
   (selectionChange)="onSelect($event)"></angular-tree-data>

@@ -38,6 +38,7 @@ export class AngularTreeDataComponent
   singleSelected: string | null = null;
 
   selectedNode: TreeNode[] = [];
+  isOpenPanel: boolean = false;
   onChange: any = () => {
   };
   onTouched: any = () => {
@@ -66,6 +67,10 @@ export class AngularTreeDataComponent
     this.nodeItems = [...this.items];
     this.assignParents(this.nodeItems, null);
     this.setDefaultValue();
+  }
+
+  onOpenMenuPanel() {
+    this.isOpenPanel = !this.isOpenPanel;
   }
 
   /**

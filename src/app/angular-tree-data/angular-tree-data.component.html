@@ -1,4 +1,5 @@
-<div class="form-floating tree-select-content position-relative w-100 border bg-white rounded border-custom-tree">
+<div class="form-floating tree-select-content position-relative w-100 border bg-white rounded border-custom-tree"
+[ngClass]="{'rtl-tree-select-content' : enableRtl}">
   <div class="selected-node">
     <ng-container *ngFor="let item of selectedNode">
       <div *ngIf="!multiSelection" (click)="onRemoveSingleSelected(item)">{{item[bindTitle]}}</div>

@@ -32,6 +32,7 @@ export class AngularTreeDataComponent
   @Input() bindChild: string = 'children';
   @Input() bindTitle: string = 'name';
   @Input() bindValue: string = 'id';
+  @Input() enableRtl: boolean = false;
 
   nodeItems: any[] = [];
   singleSelected: string | null = null;
